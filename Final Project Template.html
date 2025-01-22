@@ -1,0 +1,501 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html><head></head><body>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+    
+    
+    
+    
+
+
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput">
+<h1>Final Project TN3156: Investigating the effects of thermal noise and decay rates on the coherence of a spin qubit.<a rel="noopener" class="anchor-link" href="#Final-Project-TN3156:-Investigating-the-effects-of-thermal-noise-and-decay-rates-on-the-coherence-of-a-spin-qubit.">&#182;</a></h1><p><strong>Authors: Maria Tudor, Luis Cabo.</strong></p>
+<h2>Introduction<a rel="noopener" class="anchor-link" href="#Introduction">&#182;</a></h2><p>In this project the aim is to model how the characteristics of a spin 1/2 qubit are influenced by the effects of thermal noise in an environment. We want to focus in the specific effects varying certain initial criteria (decay rates, temperature...) can have on the decoherence of the qubit, and how these effects can be controlled to reduce the time it takes for a qubit to lose coherence and turn to an equilibrium state. Our goal is to induce decoherence in a virtual qubit by applying external thermal noise and observe how it changes with time. We will try to deduce the correlation between the noise and the decoherence of the qubit via our plots.</p>
+<p><img src="javascript://" alt="image.png"/></p>
+<p><em>Figure 1: Noise model affecting a spin qubit.</em></p>
+<h2>Description of the physical problem being simulated<a rel="noopener" class="anchor-link" href="#Description-of-the-physical-problem-being-simulated">&#182;</a></h2><p>This simulation models the dynamics of a spin-1/2 qubit interacting with a thermal bath (Fig.2) at various temperatures. For example, we could be replicating how a qubit’s superposition states are affected by the temperature of its thermal control lines.The qubit is a two-level quantum system, described by a Hamiltonian that governs its coherent evolution, other than the Liouvillian term of the LInblad equation. The Hamiltonian of the system, coupled with the liouvillian term models the relaxation, excitation and dephasing of the qubit in the environment. Initially the qubit is in a superposition state of 2 excitation states (|0&gt; + |1&gt;). We are trying to extract the way the environment the qubit is in affects the distribution of these excitation levels and understand how to decrease the time it takes for a qubit to lose its superposition properties.</p>
+<p>Initially, if the qubit was in a perfect environment with no noise, the dynamics would be solely governed by the Schrodinger equation of the Hamiltonian, and the expectation values of the pauli operators would produce the Rabi oscillations that would continue indefinitely. In this case however since we have external noise acting on the qubit, this will introduce a factor of decoherence and dissipate these oscillations over time, as the qubit reaches thermal equilibrium with the environment. This number of thermal excitations can be extracted by measuring the thermal photon number.</p>
+<p>The noise will have different effects based on the initial temperature and the decay factors that affect the coherence. We predict that when the temperature of the system increases, the excitation number (number of photons that interact with the qubit) should increase according to the Bose-Einstein distribution, meaning there will be a higher population of the excited state ∣1⟩. Meaning that the qubit will reach an equilibrium state (and thus lose coherence)  faster as the temperature increases. Additionally, we also predict that by increasing the decay factors of the qubit, it will of course lead to quicker dephasing of the qubit because the oscillations of its pauli operators will dampen quicker (increasing decay in any direction will affect the whole system).</p>
+<p><img src="https://cdn.journals.aps.org/journals/PRXQUANTUM/key_images/10.1103/PRXQuantum.3.020305.png" alt="Qubit_model_bath"/></p>
+<p><em>Figure 2: Simple model of spin qubit in thermal bath.</em></p>
+<h2>Aim and scope of the project<a rel="noopener" class="anchor-link" href="#Aim-and-scope-of-the-project">&#182;</a></h2><ul>
+<li>Model the interaction and relationship between a spin 1/2 qubit and a thermal bath at various temperatures.</li>
+<li>Investigate how thermal noise, characterized by different temperatures, affects the qubit&#39;s superposition states and coherence.</li>
+<li>Explore how the decay rates affect the qubit&#39;s loss of coherence and the transition to thermal equilibrium and phase loss.</li>
+<li>Think about future methods to control and minimize the effects of thermal noise and decay to optimize qubit performance in quantum computing systems.</li>
+</ul>
+<h2>Techniques and approach<a rel="noopener" class="anchor-link" href="#Techniques-and-approach">&#182;</a></h2><p>We start by initializing the constants, values and matrices that we are going to use. Next, we calculate the Hamiltonian and initialize the qubit in a superposition state: ∣&#120595;0⟩ = 1/sqrt(2) * (∣0⟩+∣1⟩), which is afterwards converted to a density matrix.</p>
+<p>We used three methods, one for each plot we showcase: <em>Spin Qubit Evolution in Thermal Bath, Decay effects on &#120590;z, Steady-State Population vs. Temperature</em>. All of them are based on the same calculations.</p>
+<p>We start with simulating the evolution of a spin qubit interacting with a thermal bath, by using the Lindblad master equation (&quot;<em>Circuit quantum electrodynamics</em>&quot; - Alexandre Blais, Arne L. Grimsmo, S. M. Girvin, Andreas Wallraff - equation 77):</p>
+<p><img src="javascript://" alt="lindblad.png"/></p>
+<p>where <em>H</em> is the system&#39;s Hamiltonian, <em>n</em> is the thermal photon number and <em>D</em> takes the place of the collapse operators. We chose this version of the equation as it also includes the thermal element. We will model <em>n</em> (the thermal bath) using the Bose-Einstein distribution (https://en.wikipedia.org/wiki/Bose%E2%80%93Einstein_statistics), and thus we can also include the temperature parameter (where <em>g</em> is 1, <em>T</em> is the temperature, <em>epsilon</em> is ℏω and <em>μ</em> is 0):</p>
+<p><img src="javascript://" alt="bose-einstein.png"/></p>
+<p>The collapse operators used include:</p>
+<ol>
+<li><em>Relaxation (&#120590;-):</em> Models decay from the excited state ∣1⟩ to the ground state ∣0⟩.</li>
+<li><em>Excitation (&#120590;+):</em> Models thermal excitation from ∣0⟩ to ∣1⟩.</li>
+<li><em>Dephasing (&#120590;z):</em> Captures loss of coherence in the qubit.</li>
+</ol>
+<p>After using the Lindblad equation, we extract the expectation values of the sigma values we are interested in, so that we can plot them. Using <em>ipywidgets</em>, we implement sliders to adjust certain parameters and visualize their effect on the plot.</p>
+<ol>
+<li><p><em>Spin Qubit Evolution in Thermal Bath:</em> Here we observe the time evolution of Population and Coherence. ⟨&#120590;z⟩ tracks the population difference between the ground state and the excited state over time: starts from an initial value (near 0) and approaches a steady-state value determined by the thermal bath (temperature-dependent). ⟨&#120590;x⟩ and ⟨&#120590;y⟩ measure the decay of quantum coherence (off-diagonal elements of the density matrix): these decay to zero over time, indicating the loss of quantum coherence due to dephasing and dissipation. Faster decay of ⟨&#120590;x⟩ and ⟨&#120590;y⟩ implies stronger decoherence effects.</p>
+</li>
+<li><p><em>Decay effects on &#120590;z:</em> Additional noise effects are modeled through &#120590;x and &#120590;y decay channels, to investigate how different types of noise influence the qubit&#39;s behavior. We observe a smoother or sharper transition to the steady-state value of ⟨&#120590;z⟩, depending on the magnitude of the decay rates. Larger decay rates (&#120574;x, &#120574;y) accelerate the system’s relaxation to equilibrium, shortening the coherence time. At lower decay rates, the population difference persists longer, indicating reduced environmental influence.</p>
+</li>
+<li><p><em>Steady-State Population vs. Temperature:</em> This plot shows the steady state ⟨&#120590;z⟩ as a function of <em>T</em>. So, it highlights how thermal baths determine the equilibrium population: the transition from quantum dominance (ground state) to classical thermalization (balanced populations). At low temperatures, ⟨&#120590;z⟩ is closer to +1, indicating that the qubit predominantly remains in its ground state. As temperature increases, ⟨&#120590;z⟩ becomes more negative, reflecting an increase in the excited state population due to thermal excitation. This drives the population difference toward zero (equal populations of ∣0⟩ and ∣1⟩).</p>
+</li>
+</ol>
+<p>The code can be used by running the simulation with the default parameters and adjusting the sliders in order to see the effects on the coherence and population.</p>
+<h2>Results<a rel="noopener" class="anchor-link" href="#Results">&#182;</a></h2><p>(Before running the code underneath, run the final piece of code!)</p>
+<ol>
+<li><em>Spin Qubit Evolution in Thermal Bath:</em> The first result investigates the time evolution of the spin qubit’s population and coherence under the influence of thermal noise. The primary research question here was: how does thermal noise affect the qubit&#39;s population difference (⟨&#120590;z⟩) and coherence (⟨&#120590;x⟩ and ⟨&#120590;y⟩) over time?</li>
+</ol>
+
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&#160;[2]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor">
+     <div class="CodeMirror cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">interact</span><span class="p">(</span><span class="n">simulate_and_plot</span><span class="p">,</span> <span class="n">temp</span><span class="o">=</span><span class="n">FloatSlider</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;T(K)&quot;</span><span class="p">));</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+
+
+
+
+<div class="jp-RenderedText jp-OutputArea-output">
+<pre>interactive(children=(FloatSlider(value=0.5, description=&#39;T(K)&#39;, max=5.0, min=0.1), Output()), _dom_classes=(&#39;…</pre>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput">
+<ul>
+<li>The figure shows that higher temperatures accelerate this decay, highlighting the critical role of thermal noise in reducing coherence time.</li>
+<li>⟨&#120590;z⟩ tracks the population difference between the ground state and the excited state over time: starts from an initial value (near 0) and approaches a steady-state value determined by the thermal bath (temperature-dependent).</li>
+<li>⟨&#120590;x⟩ and ⟨&#120590;y⟩ measure the decay of quantum coherence (off-diagonal elements of the density matrix): these decay to zero over time, indicating the loss of quantum coherence due to dephasing and dissipation. Faster decay of ⟨&#120590;x⟩ and ⟨&#120590;y⟩ implies stronger decoherence effects.</li>
+</ul>
+<ol start="2">
+<li><em>Decay effects on &#120590;z:</em> The second result examines how additional noise effects, modeled through &#120590;x and &#120590;y decay channels, influence the population dynamics of the qubit. The research question addressed here was: how do different decay rates (&#120574;x, &#120574;y) alter the qubit’s relaxation to equilibrium?</li>
+</ol>
+
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&#160;[3]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor">
+     <div class="CodeMirror cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">interact</span><span class="p">(</span>
+    <span class="n">simulate_with_decay</span><span class="p">,</span>
+    <span class="n">temp</span><span class="o">=</span><span class="n">FloatSlider</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;T(K)&quot;</span><span class="p">),</span>
+    <span class="n">gamma_x</span><span class="o">=</span><span class="n">FloatSlider</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;$\gamma_x$&quot;</span><span class="p">),</span>
+    <span class="n">gamma_y</span><span class="o">=</span><span class="n">FloatSlider</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;$\gamma_y$&quot;</span><span class="p">)</span>
+    <span class="p">)</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+
+
+
+
+<div class="jp-RenderedText jp-OutputArea-output">
+<pre>interactive(children=(FloatSlider(value=0.5, description=&#39;T(K)&#39;, max=5.0, min=0.1), FloatSlider(value=0.1, des…</pre>
+</div>
+
+</div>
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[3]:</div>
+
+
+
+
+<div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult">
+<pre>&lt;function __main__.simulate_with_decay(temp, gamma_x, gamma_y)&gt;</pre>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput">
+<ul>
+<li>This figure indicates that stronger noise channels significantly influence the qubit&#39;s interaction with its environment, further emphasizing the importance of minimizing noise in practical applications.</li>
+<li>Depending on how we adjust the sliders for the decay rates (&#120574;x, &#120574;y), we observe a smoother or sharper transition to the value of ⟨&#120590;z⟩.</li>
+<li>Larger decay rates accelerate the system’s relaxation to equilibrium (smoother transition), shortening the coherence time. At lower decay rates, the population difference persists longer (sharper transition), indicating reduced environmental influence.</li>
+</ul>
+<ol start="3">
+<li><em>Steady-State Population vs. Temperature:</em> The final result focuses on the steady state behavior of the qubit, showing ⟨&#120590;z⟩ as a function of <em>T</em>. The key question was: how does thermal noise at varying temperatures affect the qubit’s equilibrium state?</li>
+</ol>
+
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&#160;[4]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor">
+     <div class="CodeMirror cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">interact</span><span class="p">(</span>
+    <span class="n">steady_state_vs_temperature</span><span class="p">,</span>
+    <span class="n">gamma_x</span><span class="o">=</span><span class="n">FloatSlider</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;$\gamma_x$&quot;</span><span class="p">),</span>
+    <span class="n">gamma_y</span><span class="o">=</span><span class="n">FloatSlider</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;$\gamma_y$&quot;</span><span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+
+
+
+
+<div class="jp-RenderedText jp-OutputArea-output">
+<pre>interactive(children=(FloatSlider(value=0.1, description=&#39;$\\gamma_x$&#39;, max=0.5, step=0.01), FloatSlider(value…</pre>
+</div>
+
+</div>
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[4]:</div>
+
+
+
+
+<div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult">
+<pre>&lt;function __main__.steady_state_vs_temperature(gamma_x, gamma_y)&gt;</pre>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput">
+<ul>
+<li>This figure highlights how thermal baths determine the equilibrium population: the transition from quantum dominance (ground state) to classical thermalization (balanced populations). This result aligns with the expectations of the Bose-Einstein distribution and highlights the qubit&#39;s transition from a quantum-dominated regime (low <em>T</em>) to a classical thermal equilibrium (high <em>T</em>)</li>
+<li>At low temperatures, ⟨&#120590;z⟩ is closer to +1, indicating that the qubit predominantly remains in its ground state. As temperature increases, ⟨&#120590;z⟩ becomes more negative, reflecting an increase in the excited state population due to thermal excitation. This drives the population difference toward zero (equal populations of ∣0⟩ and ∣1⟩).</li>
+</ul>
+<h2>Summary and Outlook<a rel="noopener" class="anchor-link" href="#Summary-and-Outlook">&#182;</a></h2><p>In this project, we investigated how thermal noise and decay rates affect the coherence and population dynamics of a spin-qubit interacting with a thermal bath. The key <em>take-home messages</em> from our simulations are:</p>
+<ul>
+<li>Thermal noise drives the qubit toward equilibrium, with the steady-state population difference dependent on temperature.</li>
+<li>Coherence decay is influenced both by thermal noise and additional noise channels, with higher decay rates shortening coherence time.</li>
+<li>At low temperatures, quantum effects dominate, while at higher temperatures, thermal excitation reduces the population difference and coherence.</li>
+</ul>
+<p>These results align with theoretical expectations based on the Bose-Einstein distribution and provide a deeper understanding of how the environment impacts qubit behavior.</p>
+<p>Looking to the <em>future</em>, there are several directions to extend this work:</p>
+<ul>
+<li>We could explore how varying the qubit&#39;s energy splitting (&#120596;) impacts its sensitivity to thermal noise, especially in low-temperature regimes.</li>
+<li>Additionally, incorporating non-Markovian noise sources or more complex bath interactions would provide a more realistic picture of qubit decoherence in real-world quantum systems.</li>
+<li>Another avenue would be to apply these techniques to model multi-qubit systems to study the interplay between qubit-qubit entanglement and environmental noise.</li>
+</ul>
+<p>By refining these methods, this research could contribute to the broader effort of improving qubit coherence times, a critical factor for the advancement of quantum technologies.</p>
+<h2>References<a rel="noopener" class="anchor-link" href="#References">&#182;</a></h2><p>Wikipedia, Bose–Einstein distribution. https://en.wikipedia.org/wiki/Bose%E2%80%93Einstein_statistics.</p>
+<p>ipywidgets Documentation, Official Documentation, Project Jupyter. https://ipywidgets.readthedocs.io/en/stable/.</p>
+<p>Alexandre Blais, Arne L. Grimsmo, S. M. Girvin, Andreas Wallraff, Circuit quantum electrodynamics, May 2020. Equation 77 was used. https://arxiv.org/pdf/2005.12667</p>
+<p>Daniel Grimmer, What You Always Wanted to Know About Quantum Trajectories But Were Afraid to Ask, August 2023. https://arxiv.org/pdf/2210.04539.</p>
+<p>Course material for lectures 7-8, Lindblad master equation and noise in quantum systems.</p>
+<p>Description and control of decoherence in quantum bit systems; Henryk Peter, Gregor Gutmann; Munchen, June 2005. https://edoc.ub.uni-muenchen.de/4086/1/Gutmann_Henryk_P_G.pdf</p>
+<p>Daniel Manzano; A short introduction to the Lindblad master equatio; Special Collection: 2020 Mathematical Physics. https://pubs.aip.org/aip/adv/article/10/2/025106/1021638/Ashort-introduction-to-the-Lindblad-master</p>
+<p>Qutech Academy, Decoherence of a Bloch Sphere. https://www.qutube.nl/quantum-computer-12/decoherence-on-a-bloch-sphere</p>
+<p>Material-Inherent Noise Sources in Quantum Information Architecture; HeeBong Yang and Na Young Kim; Materials 2023, 16(7), 2561; March 2023. https://www.mdpi.com/1996-1944/16/7/2561</p>
+<h2>Author Contributions<a rel="noopener" class="anchor-link" href="#Author-Contributions">&#182;</a></h2><ul>
+<li>Introduction : Luis Cabo</li>
+<li>Description of the physical problem being simulated : Luis Cabo</li>
+<li>Aim and scope of the project : Luis Cabo</li>
+<li>Techniques and approach : Maria Tudor</li>
+<li>Results : Maria Tudor</li>
+<li>Summary and Outlook : Maria Tudor</li>
+<li>Code :<ul>
+<li>simulate_and_plot, steady_state_with_temperature : Maria Tudor</li>
+<li>simulate_with_decay : Luis Cabo</li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&#160;[1]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor">
+     <div class="CodeMirror cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">qutip</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">ipywidgets</span> <span class="kn">import</span> <span class="n">interact</span><span class="p">,</span> <span class="n">FloatSlider</span>
+
+<span class="c1"># Constants</span>
+<span class="n">k_B</span> <span class="o">=</span> <span class="mf">1.380649e-23</span>     <span class="c1"># Boltzmann constant (J/K)</span>
+<span class="n">hbar</span> <span class="o">=</span> <span class="mf">1.0545718e-34</span>   <span class="c1"># Reduced Planck&#39;s constant (J*s)</span>
+
+<span class="c1"># Parameters</span>
+<span class="n">omega</span> <span class="o">=</span> <span class="mf">1.0</span>                      <span class="c1"># 1 GHz in radians per second</span>
+<span class="n">gamma_down</span> <span class="o">=</span> <span class="mf">0.1</span>                 <span class="c1"># Relaxation rate</span>
+<span class="n">gamma_up</span> <span class="o">=</span> <span class="mf">0.05</span>                  <span class="c1"># Excitation rate</span>
+<span class="n">gamma_phi</span> <span class="o">=</span> <span class="mf">0.02</span>                 <span class="c1"># Dephasing rate</span>
+<span class="n">times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>  <span class="c1"># Time: 500 points in [0, 20]</span>
+
+<span class="c1"># Matrices</span>
+<span class="n">sigmaz</span> <span class="o">=</span> <span class="n">sigmaz</span><span class="p">()</span>       <span class="c1"># Pauli Z</span>
+<span class="n">sigmax</span> <span class="o">=</span> <span class="n">sigmax</span><span class="p">()</span>       <span class="c1"># Pauli X</span>
+<span class="n">sigmay</span> <span class="o">=</span> <span class="n">sigmay</span><span class="p">()</span>       <span class="c1"># Pauli Y</span>
+<span class="n">sigmam</span> <span class="o">=</span> <span class="n">sigmam</span><span class="p">()</span>       <span class="c1"># Lowering operator |1&gt; -&gt; |0&gt;</span>
+<span class="n">sigmap</span> <span class="o">=</span> <span class="n">sigmap</span><span class="p">()</span>       <span class="c1"># Raising operator |0&gt; -&gt; |1&gt;</span>
+
+<span class="c1"># Hamiltonian</span>
+<span class="n">H</span> <span class="o">=</span> <span class="n">omega</span> <span class="o">*</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">sigmaz</span>  <span class="c1"># Hamiltonian</span>
+
+<span class="c1"># Initial state: superposition (|0&gt; + |1&gt;)</span>
+<span class="n">psi0</span> <span class="o">=</span> <span class="p">(</span><span class="n">basis</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">basis</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">unit</span><span class="p">()</span>
+
+<span class="c1"># density matrix</span>
+<span class="n">rho0</span> <span class="o">=</span> <span class="n">ket2dm</span><span class="p">(</span><span class="n">psi0</span><span class="p">)</span>  
+
+
+<span class="c1"># plot results for a given temperature</span>
+<span class="k">def</span> <span class="nf">simulate_and_plot</span><span class="p">(</span><span class="n">temp</span><span class="p">):</span>
+    
+    <span class="c1"># Bose-Einstein distribution =&gt; thermal photon number</span>
+    <span class="n">nbar</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">hbar</span> <span class="o">*</span> <span class="n">omega</span> <span class="o">/</span> <span class="p">(</span><span class="n">k_B</span> <span class="o">*</span> <span class="n">temp</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1e11</span>  <span class="c1"># Reduced scale</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Thermal photon number (n̄) at T = </span><span class="si">{</span><span class="n">temp</span><span class="si">}</span><span class="s2"> K: </span><span class="si">{</span><span class="n">nbar</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Collapse operators</span>
+    <span class="n">c_ops</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">gamma_down</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">nbar</span><span class="p">))</span> <span class="o">*</span> <span class="n">sigmam</span><span class="p">,</span>  <span class="c1"># Relaxation</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">gamma_up</span> <span class="o">*</span> <span class="n">nbar</span><span class="p">)</span> <span class="o">*</span> <span class="n">sigmap</span><span class="p">,</span>          <span class="c1"># Excitation</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">gamma_phi</span><span class="p">)</span> <span class="o">*</span> <span class="n">sigmaz</span>                 <span class="c1"># Dephasing</span>
+    <span class="p">]</span>
+
+    <span class="c1"># Solve Lindblad master equation</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">mesolve</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">rho0</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">c_ops</span><span class="p">,</span> <span class="p">[</span><span class="n">sigmaz</span><span class="p">,</span> <span class="n">sigmax</span><span class="p">,</span> <span class="n">sigmay</span><span class="p">])</span>
+
+    <span class="c1"># Extract expectation values</span>
+    <span class="n">z_expect</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">expect</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># sigma_z</span>
+    <span class="n">x_expect</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">expect</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># sigma_x</span>
+    <span class="n">y_expect</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">expect</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>  <span class="c1"># sigma_y</span>
+
+    <span class="c1"># Plot results</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">z_expect</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;$\langle \sigma_z \rangle$&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">x_expect</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;$\langle \sigma_x \rangle$&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">y_expect</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;$\langle \sigma_y \rangle$&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Time&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Expectation values&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Spin Qubit Evolution in Thermal Bath (T = </span><span class="si">{</span><span class="n">temp</span><span class="si">}</span><span class="s2"> K)&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    
+
+<span class="k">def</span> <span class="nf">simulate_with_decay</span><span class="p">(</span><span class="n">temp</span><span class="p">,</span> <span class="n">gamma_x</span><span class="p">,</span> <span class="n">gamma_y</span><span class="p">):</span>
+    <span class="c1"># Bose-Einstein distribution =&gt; thermal photon number</span>
+    <span class="n">nbar</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">hbar</span> <span class="o">*</span> <span class="n">omega</span> <span class="o">/</span> <span class="p">(</span><span class="n">k_B</span> <span class="o">*</span> <span class="n">temp</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1e11</span>  <span class="c1"># Reduced scale</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Thermal photon number (n̄) at T = </span><span class="si">{</span><span class="n">temp</span><span class="si">}</span><span class="s2"> K: </span><span class="si">{</span><span class="n">nbar</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Collapse operators with the added noise from σ_x, σ_y</span>
+    <span class="n">c_ops</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">gamma_down</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">nbar</span><span class="p">))</span> <span class="o">*</span> <span class="n">sigmam</span><span class="p">,</span>  <span class="c1"># Relaxation</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">gamma_up</span> <span class="o">*</span> <span class="n">nbar</span><span class="p">)</span> <span class="o">*</span> <span class="n">sigmap</span><span class="p">,</span>          <span class="c1"># Excitation</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">gamma_phi</span><span class="p">)</span> <span class="o">*</span> <span class="n">sigmaz</span><span class="p">,</span>                <span class="c1"># Dephasing</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">gamma_x</span><span class="p">)</span> <span class="o">*</span> <span class="n">sigmax</span><span class="p">,</span>                  <span class="c1"># Decay in σ_x</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">gamma_y</span><span class="p">)</span> <span class="o">*</span> <span class="n">sigmay</span>                   <span class="c1"># Decay in σ_y</span>
+    <span class="p">]</span>
+
+    <span class="c1"># Solve Lindblad master equation</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">mesolve</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">rho0</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">c_ops</span><span class="p">,</span> <span class="p">[</span><span class="n">sigmaz</span><span class="p">])</span>
+
+    <span class="c1"># Extract expectation values for sigma_z</span>
+    <span class="n">z_expect</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">expect</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># Plot results</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">z_expect</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;$\langle \sigma_z \rangle$&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Time&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$\langle \sigma_z \rangle$&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Decay Effects on $\langle \sigma_z </span><span class="se">\\</span><span class="s2">rangle$ (T = </span><span class="si">{</span><span class="n">temp</span><span class="si">}</span><span class="s2"> K)&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    
+<span class="k">def</span> <span class="nf">steady_state_vs_temperature</span><span class="p">(</span><span class="n">gamma_x</span><span class="p">,</span> <span class="n">gamma_y</span><span class="p">):</span>
+    <span class="n">temps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>  <span class="c1"># Range of temperatures</span>
+    <span class="n">steady_states</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">temp</span> <span class="ow">in</span> <span class="n">temps</span><span class="p">:</span>
+        <span class="n">nbar</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">hbar</span> <span class="o">*</span> <span class="n">omega</span> <span class="o">/</span> <span class="p">(</span><span class="n">k_B</span> <span class="o">*</span> <span class="n">temp</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1e11</span>  <span class="c1"># Reduced scale</span>
+        <span class="n">c_ops</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">gamma_down</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">nbar</span><span class="p">))</span> <span class="o">*</span> <span class="n">sigmam</span><span class="p">,</span>  <span class="c1"># Relaxation</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">gamma_up</span> <span class="o">*</span> <span class="n">nbar</span><span class="p">)</span> <span class="o">*</span> <span class="n">sigmap</span><span class="p">,</span>          <span class="c1"># Excitation</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">gamma_phi</span><span class="p">)</span> <span class="o">*</span> <span class="n">sigmaz</span><span class="p">,</span>                <span class="c1"># Dephasing</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">gamma_x</span><span class="p">)</span> <span class="o">*</span> <span class="n">sigmax</span><span class="p">,</span>                  <span class="c1"># Decay in σ_x</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">gamma_y</span><span class="p">)</span> <span class="o">*</span> <span class="n">sigmay</span>                   <span class="c1"># Decay in σ_y</span>
+        <span class="p">]</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">steadystate</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">c_ops</span><span class="p">)</span>  <span class="c1"># Solve for steady state</span>
+        <span class="n">z_expect_ss</span> <span class="o">=</span> <span class="n">expect</span><span class="p">(</span><span class="n">sigmaz</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+        <span class="n">steady_states</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">z_expect_ss</span><span class="p">)</span>
+
+    <span class="c1"># Plot steady-state values</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">temps</span><span class="p">,</span> <span class="n">steady_states</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;$\langle \sigma_z \rangle_{\text{steady-state}}$&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Temperature (K)&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$\langle \sigma_z \rangle$&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Steady-State Population vs. Temperature&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&#160;[&#160;]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor">
+     <div class="CodeMirror cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span> 
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+</div>
+
+
+
+
+
+
+
+
+
+<script type="module" src="https://s.brightspace.com/lib/bsi/2024.12.210/unbundled/mathjax.js"></script><script type="text/javascript">document.addEventListener('DOMContentLoaded', function() {
+						if (document.querySelector('math') || /\$\$|\\\(|\\\[|\\begin{|\\ref{|\\eqref{/.test(document.body.innerHTML)) {
+							document.querySelectorAll('mspace[linebreak="newline"]').forEach(elm => {
+								elm.setAttribute('style', 'display: block; height: 0.5rem;');
+							});
+
+							window.D2L.MathJax.loadMathJax({
+								outputScale: 1.5,
+								renderLatex: true,
+								enableMML3Support: false
+							});
+						}
+					});</script><script type="module" src="https://s.brightspace.com/lib/bsi/2024.12.210/unbundled/prism.js"></script><script type="text/javascript">document.addEventListener('DOMContentLoaded', function() {
+					document.querySelectorAll('.d2l-code').forEach(code => {
+						window.D2L.Prism.formatCodeElement(code);
+					});
+				});</script><script type="module" src="https://s.brightspace.com/lib/bsi/2024.12.210/unbundled/embeds.js"></script><script type="text/javascript">document.addEventListener('DOMContentLoaded', function() {
+					window.D2L.EmbedRenderer.renderEmbeds(document.body);
+				});</script></body></html>
